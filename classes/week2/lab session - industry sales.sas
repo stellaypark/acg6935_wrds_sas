@@ -1,7 +1,21 @@
 
+/*
+comments from word doc
 
-myCompTable
+Compute industry-year sales, so for each unique year-industry you want to know the sum of sales (several firms in each industry – so, it will add those firms’ sales)
+Data a_start;
+Set a_start;
+Indyear = SIC || “_” || fyear; * concatenate industry and year ;
+Run;
+Data b_ind (keep = indyear indsales sic fyear);
+Set a_start;
+By indyear;
+Retain indsales 0;
+Indsales = indsales + sale; 
+If last.indyear then output;
+run;
 
+*/
 rsubmit;
 
 data myTable (keep = gvkey fyear datadate sale sich);
