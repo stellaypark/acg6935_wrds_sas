@@ -42,7 +42,6 @@ data myfiles.a_funda;
 run;
 
 proc download data=myfiles.a_funda out=a_funda;run;
-
 endrsubmit;
 
 /* step 2. for each firm-year, compute the standard deviation in ROA for the last 20 quarters */
@@ -132,7 +131,22 @@ proc sql;
 	from b_fundq a left join b_fundq b
     on  a.key = b.key /* same firm-year */
 	and a.fyearq -1 = b.fyearq /* b.roa needs to be 1 year before a.fyearq */
-	and	a.fqtr = b.fqtr; /* same fiscal quarter (1, 2, 3, 4) */
+	and	a.fqtr = b.fqtr
+	and b.roa > 0
+; /* same fiscal quarter (1, 2, 3, 4) */
+quit;
+
+/* just for illustration: inner join with condition */
+proc sql;
+ 	create table e_withlag as
+	select a.*, b.roa as roa_prev, b.fyearq as fyearq_prev /* for debugging */
+	/* note that b_fundq is both a and b: a self join */
+	from b_fundq a , b_fundq b
+    where  a.key = b.key /* same firm-year */
+	and a.fyearq -1 = b.fyearq /* b.roa needs to be 1 year before a.fyearq */
+	and	a.fqtr = b.fqtr
+	and -50 <= b.roa <-2;
+; 
 quit;
 
 proc sort data= e_withlag; by key gvkey fyearq fqtr;run;
@@ -197,3 +211,6 @@ proc sql;
 	create table i_count as 
 	select distinct year(datadate) as year, count(*) as numobs from h_segment group by year(datadate);
 quit;
+
+/* no -- still needs cleaning up, industrial and geographic segments combined, duplicates for years, 
+	includes corporate as segment, etc */
