@@ -204,12 +204,12 @@ PROC SQL;
   create table ccMerged as 
   select a.*, b.lpermno as permno
   from getThese a left join crsp.ccmxpf_linktable b 
-    on a.gvkey = b.gvkey 
+    on a.gvkey eq b.gvkey 
     and b.lpermno ne . 
     and b.linktype in ("LC" "LN" "LU" "LX" "LD" "LS") 
     and b.linkprim IN ("C", "P")  
-    and ((a.datadate >= b.LINKDT) or b.LINKDT = .B) and  
-       ((a.datadate <= b.LINKENDDT) or b.LINKENDDT = .E)   ; 
+    and ((a.datadate >= b.LINKDT) or b.LINKDT eq .B) and  
+       ((a.datadate <= b.LINKENDDT) or b.LINKENDDT eq .E)   ; 
   quit; 
   
 proc download data=ccMerged out=u_withpermno; run;
