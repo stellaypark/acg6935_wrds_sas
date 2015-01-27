@@ -11,7 +11,7 @@ CRSP Indices (DSIX, MSIX)
 Matching Compustat and CRSP (CCM)
 
 */
-
+rsubmit;endrsubmit;
 %let wrds = wrds.wharton.upenn.edu 4016;options comamid = TCP remote=WRDS;
 signon username=_prompt_;
 
@@ -23,7 +23,7 @@ signon username=_prompt_;
 %let vars = equity return;
  
 /* create descriptive statistics */
-proc means data=results NOPRINT;
+proc means data=result NOPRINT;
 output out=table1 mean= median= std= min= max= p25= p75= N=/autoname;
 var &vars;
 run;
@@ -83,6 +83,28 @@ options mprint mfile;
 %mend;
 %myThird(dsin=result, dsout=result3, datevar=date, name=year);
 
+* multiple vars, with optional values (in this case name) ;
+%macro myThird(dsin=, dsout=, datevar=, name=year); 
+  data &dsout;
+  set &dsin;
+  &name = year(&datevar);
+  run;
+%mend;
+%myThird(dsin=result, dsout=result3, datevar=date);
+
+* it is possible to have macro variables defined 'outside' the macro;
+%let something = "hi";
+%macro myThird(dsin=, dsout=, datevar=, name=year); 
+  data &dsout;
+  set &dsin;
+  &name = year(&datevar);
+  somevar = &something;
+  run;
+%mend;
+%myThird(dsin=result, dsout=result3, datevar=date);
+
+
+
 * congratulations -- you just made a reusable component!;
 
 /* system errors */
@@ -116,7 +138,7 @@ troublesome bugs if you don't look at the log after submitting statements
 
 /* note the folder structure: class 3 folder has  subdirectory 'general macros' */
 
-%include "general macros/runquit.sas";
+%include "E:\teaching\2015_wrds\acg6935_wrds_sas\classes\week3\general macros\runquit.sas";
 
 /* compare */
 proc go_gators!; quit;
