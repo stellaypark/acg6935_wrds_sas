@@ -38,10 +38,28 @@ run;
 
 /* fancy */
 proc sql; select min(fyear), max(fyear) into :minYr, :maxYr from a_funda;quit;
+
+
 %put start year: &minYr ending year: &maxYr;
 data b_indicators;
 set a_funda;
 %do_over(values=&minYr - &maxYr, phrase=d? = (fyear eq ?););
+run;
+
+/* another way -- just in case there are jumps in the years , if 2012 would be missing */
+proc sql;
+	create table myYears as select distinct fyear from a_funda ;
+quit;
+
+%array(kangaroo, data=myYears, var=fyear);
+%put kangarooN: &kangarooN;
+%put kangaroo1: &kangaroo1;
+%put kangaroo2: &kangaroo2;
+
+
+data b_indicators;
+set a_funda;
+%do_over(values=kangaroo, phrase=d? = (fyear eq ?););
 run;
 
 /* another example: industry-adjust variables */
@@ -79,19 +97,29 @@ by keyYrInd;
 /*  Append industry-adjusted */
 proc sql;
      create table work.a_ia3 as
+	 /* generates: a.*, b.roa_median, b.roe_median */
         select a.*, %DO_OVER(VALUES=&vars, PHRASE=b.?_median, BETWEEN=COMMA ) 
         from
             work.a_ia1 a, work.a_ia2 b
         where
             a.keyYrInd = b.keyYrInd;
 %runquit;
- 
+ /*
+%macro computedIAdj(var);    &var._IA = &var - &var._median;%mend;
+*/
 /*  Create output dataset and Drop keyYrInd and medians */
 data &dsout (drop =keyYrInd %DO_OVER(VALUES=&vars, PHRASE=?_median));
 set work.a_ia3;
 %DO_OVER(VALUES=&vars, MACRO = computedIAdj);
 %runquit;
 
+/* will generate 
+data &dsout (drop =keyYrInd roa_median roe_median);
+set work.a_ia3;
+roa_IA = roa - roa_median;
+roe_IA = roe - roe_median;
+%runquit;
+*/
 /*  Clean up */    
 proc datasets 
 library=work;      
