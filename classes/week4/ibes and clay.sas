@@ -59,7 +59,7 @@ quit;
 
 data b_indicators;
 set a_funda;
-%do_over(values=kangaroo, phrase=d? = (fyear eq ?););
+%do_over(kangaroo, phrase=d? = (fyear eq ?););
 run;
 
 /* another example: industry-adjust variables */
