@@ -11,10 +11,13 @@
 
 filename mprint 'c:\temp\sas_macrocode.txt'; options mfile mprint;
 
+/* Clay's array and do_over are also loaded */
+
+
 /* create dataset */
 
 /* use funda as starting point */
-%getFunda(dsout=a_funda, vars=ni at sale ceq csho prcc_f, laggedvars=at, year1=2010, year2=2013);
+%getFunda(dsout=a_funda, vars=ni at sale ceq csho prcc_f, laggedvars=at sale csho prcc_f, year1=2010, year2=2013);
 
 /* get earnings announcement date */
 %earn_ann_date(dsin=a_funda, dsout=b_earn_ann, varname=ann_dt, source=IBES);
@@ -54,3 +57,32 @@ proc surveyreg data=f_sample_wins;
 	            FitStatistics 		= _surv_fit
 				DataSummary 		= _surv_summ;
 quit;
+
+
+
+
+%macro buildDataset(option=IBES, finalDset=);
+
+/* use funda as starting point */
+%getFunda(dsout=a_funda, vars=ni at sale ceq csho prcc_f, laggedvars=at sale csho prcc_f, year1=2010, year2=2013);
+
+/* get earnings announcement date */
+%if &option eq IBES %then %do;
+  %earn_ann_date(dsin=a_funda, dsout=b_earn_ann, varname=ann_dt, source=IBES);
+%end;
+%else %do;
+  %earn_ann_date(dsin=a_funda, dsout=b_earn_ann, varname=ann_dt, source=fundq);
+%end;
+
+/* get earnings surprise */
+%unex_earn(dsin=b_earn_ann2, dsout=c_unex);
+
+/* get beta */
+%getBeta(dsin=c_unex, dsout=d_beta, nMonths=30, minMonths=12, estDate=ann_dt);
+
+/* get event stock return */
+%eventReturn(dsin=d_beta, dsout=e_ret, eventdate=ann_dt, start=-1, end=2, varname=abnret);
+%eventReturn(dsin=e_ret, dsout=&finalDset, eventdate=ann_dt, start=0, end=1, varname=abnret2);
+%mend;
+%buildDataset(option=IBES, finalDset=mydatasetIBES);
+%buildDataset(option=fundq, finalDset=mydatasetFundq);
