@@ -1,7 +1,3 @@
-data z;
-set h_large;
-if largeFirm eq 1;
-run;
 /* import macros */
 
 %let myFolder = E:\teaching\2015_wrds\acg6935_wrds_sas\classes\week6;
@@ -25,7 +21,7 @@ filename mprint 'c:\temp\sas_macrocode.txt'; options mfile mprint;
 /* create dataset */
 
 /* use funda as starting point */
-%getFunda(dsout=a_funda, vars=ni at sale ceq csho prcc_f, laggedvars=ceq at csho prcc_f, year1=2004, year2=2013);
+%getFunda(dsout=a_funda, vars=ni at sale ceq csho prcc_f, laggedvars=ceq at csho prcc_f, year1=2011, year2=2013);
 
 /* important: define list of main variables, and refer to them by &myVars
 	ensures consistency for winsorize, descriptive vars, treatment of missing vars, etc */

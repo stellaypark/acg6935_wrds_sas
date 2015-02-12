@@ -128,5 +128,5 @@ libname secsuite "/wrds/sec/sasdata";
 proc download data=secsuite.wciklink_gvkey out=wciklink_gvkey; run; 
 endrsubmit;
 
-/* I usually first try to get a match with the historic cik, and if there is no
+/* I usually first try to get a match with the funda cik, and if there is no
 match, try the ones provided in the linktable */
