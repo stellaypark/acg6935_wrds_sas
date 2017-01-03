@@ -9,6 +9,10 @@ signon username=_prompt_;
 
 /* execute code remotely within rsubmit-endrsubmit code block 
    note that after 15 or so minutes of inactivity, you need to sign on again
+   also, you can have two rsubmits running at the same time
+   and, you can have sessions gone bad, that need to be removed from the wrds website
+   (log in to https://wrds-web.wharton.upenn.edu and select the 3rd option 'running queries' 
+   of the dropdown menu on your name - top right)
 */
 rsubmit;
 /* hi */
