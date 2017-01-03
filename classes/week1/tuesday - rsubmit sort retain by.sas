@@ -72,39 +72,31 @@ if first.gvkey then increase = .;
 sale_prev = sale; /* <---------- update previous sales */
 run;
 
+/* another way */
+data myCleanTable;  
+set myCompTable;
+by gvkey;
+/* ifn function: 
+IFC (condition, value if true, value if false, value if missing)
+// for example
+firmtype = IFC ( sale > 10, "big", "small", "missing");
+*/
+sale_lag = ifn(gvkey=lag(gvkey) and fyear=lag(fyear)+1, lag(sale), ., .);  
+increase = (sale > sale_lag);
+run; 
+
+
 /* missing is represented by a large negative number */
 data test;
 miss = .;
-somesmallval = 900;
 larger = ( 1000 > miss); /* expect to be true */
-larger2 = IFN ( 1000 > miss , 1, 0, .); /* does not work: (-1000 > miss) still is 1 */
-larger3 = IFN ( miss ne . , ( 1000 > miss ), . ); /* expect to be .*/
-larger4 = IFN ( somesmallval ne . , ( 1000 > somesmallval ), . ); /* expect to be 1 */
 run;
-
-
 
 /* subsample */
 data myCompTable2 (keep = gvkey fyear sale);
 set myCompTable;
 retain sale;
-if _N_ <= 30;
-run;
-
-/* using 'retain' by itself */
-data myCompTable3;
-set myCompTable2;
-retain myNewVar -5; /* initial value of myNewVar is -5 */
-sale_ln = log(sale);
-myNewVar = myNewVar  + 1;
-run;
-
-/* compare without 'retain' */
-data myCompTable3;
-set myCompTable2;
-/*retain myNewVar -5; */
-if _N_ eq 1 then myNewVar = -5; /* using _N_ to set initial value of myNewVar */
-myNewVar = myNewVar  + 1;
+if _N_ <= 300;
 run;
 
 /* let's count the number of fiscal years, and the number of loss years for each firm 
