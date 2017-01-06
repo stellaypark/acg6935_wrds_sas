@@ -52,7 +52,7 @@ tables bin;
 run;
 
 
-/* we will conver macros 
+/* we will conver macros later (week 3/4) -- here is an example though
 
 /*
 	myBin macro arguments:
