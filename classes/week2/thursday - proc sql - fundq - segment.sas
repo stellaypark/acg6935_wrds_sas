@@ -24,7 +24,7 @@ rsubmit;
 libname myfiles "~"; /* ~ is home directory in Linux, e.g. /home/ufl/imp */
 proc sql;
 	create table myfiles.a_funda as
-		select gvkey, fyear, datadate
+		select gvkey, fyear, datadate, sich, sale
 	  	from comp.funda 
   	where 		
 		2000 <= fyear <= 2013
@@ -43,6 +43,14 @@ run;
 
 proc download data=myfiles.a_funda out=a_funda;run;
 endrsubmit;
+
+/* side-step: label and formatting of variables */
+proc sql;
+	create table myTable as 
+		select sich, sum(sale) as sumSale LABEL="Sum of Sales" format=comma20. 
+		from a_funda group by sich;
+quit;
+
 
 /* step 2. for each firm-year, compute the standard deviation in ROA for the last 20 quarters */
 
