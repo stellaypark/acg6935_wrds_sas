@@ -7,14 +7,8 @@ topics
 - Compustat Segment files
 */
 
-/*
-	suppose we want to create a dataset with:
-		1. financial firms in Funda (SIC codes 6000-6999), with fiscal years in 2000-2013
-		2. for each firm-year, compute the standard deviation in ROA for the last 20 quarters
-			drop firm-years with less than 12 obs
-*/
 
-/* step 1: get financial firms with fiscal years 2000-2013 */
+/* get a dataset to work with */
 
 %let wrds = wrds.wharton.upenn.edu 4016;options comamid = TCP remote=WRDS;
 signon username=_prompt_;
@@ -24,7 +18,7 @@ rsubmit;
 libname myfiles "~"; /* ~ is home directory in Linux, e.g. /home/ufl/imp */
 proc sql;
 	create table myfiles.a_funda as
-		select gvkey, fyear, datadate, sich, sale
+		select gvkey, fyear, datadate, sich, sale, ni
 	  	from comp.funda 
   	where 		
 		2000 <= fyear <= 2013
@@ -44,12 +38,43 @@ run;
 proc download data=myfiles.a_funda out=a_funda;run;
 endrsubmit;
 
-/* side-step: label and formatting of variables */
+/* side-steps */
+
+/* as promised: label (bonus: formatting of variables) */
 proc sql;
 	create table myTable as 
 		select sich, sum(sale) as sumSale LABEL="Sum of Sales" format=comma20. 
 		from a_funda group by sich;
 quit;
+
+/* another side step: using 'calculated' to refer to a newly constructed variable */
+proc sql;
+	create table myTable as 
+		select sich, sum(sale) as sumSale ,	calculated sumSale * 2 as twiceSumSale
+		from a_funda 
+		group by sich
+		having sumSale > 10
+;
+quit;
+
+/* creating indicator variables: create loss dummy  */
+
+proc sql;
+	create table myTable as select *, (ni < 0) as loss 
+		from a_funda;
+	quit;
+
+/*
+	suppose we want to create a dataset with:
+		1. financial firms in Funda (SIC codes 6000-6999), with fiscal years in 2000-2013
+		2. for each firm-year, compute the standard deviation in ROA for the last 20 quarters
+			drop firm-years with less than 12 obs
+*/
+
+/* step 1: get financial firms with fiscal years 2000-2013 */
+
+/* use a_funda created above */
+
 
 
 /* step 2. for each firm-year, compute the standard deviation in ROA for the last 20 quarters */
