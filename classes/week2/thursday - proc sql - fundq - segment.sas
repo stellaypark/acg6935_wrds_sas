@@ -162,7 +162,7 @@ proc sql;
 	select a.*, b.roa as roa_prev, b.fyearq as fyearq_prev /* for debugging */
 	/* note that b_fundq is both a and b: a self join */
 	from b_fundq a left join b_fundq b
-    on  a.key = b.key /* same firm-year */
+    on  a.gvkey = b.gvkey /* same firm */
 	and a.fyearq -1 = b.fyearq /* b.roa needs to be 1 year before a.fyearq */
 	and	a.fqtr = b.fqtr
 	and b.roa > 0
@@ -175,7 +175,7 @@ proc sql;
 	select a.*, b.roa as roa_prev, b.fyearq as fyearq_prev /* for debugging */
 	/* note that b_fundq is both a and b: a self join */
 	from b_fundq a , b_fundq b
-    where  a.key = b.key /* same firm-year */
+    where  a.gvkey = b.gvkey /* same firm */
 	and a.fyearq -1 = b.fyearq /* b.roa needs to be 1 year before a.fyearq */
 	and	a.fqtr = b.fqtr
 	and -50 <= b.roa <-2;
