@@ -1,38 +1,28 @@
 /* lab session week 4
 
-
 	topics: 
-		importing macros (in separate file)
-		
+		importing macros (in separate file)		
 		accessing macro variables in rsubmit block
-
 */
 
-
-
 /* including a file */
-
 %include "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week3\general macros\runquit.sas";
 
-/* include from web --- note: this is a security risk */
- 
- /* note -- the file extension is .txt, it contains sas code and it runs */
+/* include from web --- note: this is a security risk */ 
+/* note -- the file extension is .txt, it contains sas code and it runs */
 filename m1 url 'http://bear.warrington.ufl.edu/joost/sas_macros/runquit.txt';
 %include m1;
 
 /* it doesn't have to be a macro */
-
 filename m1 url 'http://bear.warrington.ufl.edu/joost/sas_macros/test.txt';
 %include m1;
-
 
 /*  import all files in a folder */
 filename mymacros "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week3\general macros\";
 %include mymacros('*.sas');
 
 
-/* accessing macros on wrds in rsubmit */
-
+/* accessing macro variables on wrds in rsubmit */
 %let myVariables = at ceq sale;
 
 %put I like to think about &myVariables; 
