@@ -138,7 +138,7 @@ troublesome bugs if you don't look at the log after submitting statements
 
 /* note the folder structure: class 3 folder has  subdirectory 'general macros' */
 
-%include "E:\teaching\2015_wrds\acg6935_wrds_sas\classes\week3\general macros\runquit.sas";
+%include "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week3\general macros\runquit.sas";
 
 /* compare */
 proc go_gators!; quit;
