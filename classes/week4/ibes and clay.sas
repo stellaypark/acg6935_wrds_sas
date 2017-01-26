@@ -40,7 +40,11 @@ options mprint mfile;
   /* join with fundq */
   proc sql;
     create table myComp4 as
-    * select a.* , b.datadate as datadate_fundq, &varsFundq;
+    /* select a.* , b.datadate as datadate_fundq, &varsFundq;
+		varsFundq holds: 
+		%do_over(values=atq ceqq niq, phrase=b.?, between=comma)
+	=> generates: b.atq,b.ceqq,b.niq
+	*/
     select a.* , b.datadate as datadate_fundq, %do_over(values=&varsFundq, phrase=b.?, between=comma)
     
     from myComp3 a left join comp.fundq b
@@ -70,9 +74,7 @@ run;
 proc download data=a_funda out=a_funda;run;
 endrsubmit;
 
-
 /* lets make year-indicator variables */
-
 
 /* simple way */
 data b_indicators;
@@ -88,6 +90,15 @@ data b_indicators;
 set a_funda;
 %do_over(values=2010-2013, phrase=d? = (fyear eq ?););
 run;
+
+/* replace missings with zero for these variables */
+%let varlist = xrd dltt .....;
+
+data clean;
+set start;
+$do_over(values=&varlist, phrase=if missing(?) then ? = 0;);
+run;
+
 
 /* fancy way */
 /* figure out first and last fyear */
@@ -152,6 +163,8 @@ run;
 
 /* path holds the file name paths, assign to an array */
 %ARRAY(files, DATA=yfiles, VAR=path) ;
+
+%put number of files: &filesN;
 
 %put %do_over(files, phrase =file: ? ?_I_);
 
