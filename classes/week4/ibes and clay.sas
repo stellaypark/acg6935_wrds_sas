@@ -7,8 +7,57 @@ IBES Summary
 IBES Detail
 */
 
+/*  Include array function macros */
+filename m1 url 'http://www.wrds.us/macros/array_functions.sas';
+%include m1;
+/*  Include runquit macro */
+filename m2 url 'http://www.wrds.us/macros/runquit.sas';
+%include m2;
+
+/* turn on macro debugging */
+filename mprint 'C:\temp\tempSAScode.SAS';
+options mprint mfile;
+
+/* Clay %array and %do_over documentation: http://www2.sas.com/proceedings/sugi31/040-31.pdf */
+
+/* remember the join funda-fundq where we passed 'ceqq atq niq' to a macro 
+  and we needed to replace spaces with commas => 'ceqq, atq, niq'
+  or even 'b.ceqq, b.atq, b.niq'  */
+%macro addFundQ(dsin=, dsout=, varsFundq=);
+  /* construct comma separated varlist */
+  * %let varList= %sysfunc(tranwrd(&varsFundq, %str( ) , %str(,) )) ;
+  /* push macro variables to wrds */
+  %SYSLPUT dsin=&dsin;
+  %SYSLPUT dsout=&dsout;
+  * %SYSLPUT varsFundq=&varList;
+  %SYSLPUT varsFundq=&varsFundq;
+
+  rsubmit;
+  /* need to load clay macros */
+  filename m1 url 'http://www.wrds.us/macros/array_functions.sas';
+  %include m1;
+  proc upload data=&dsin out = myComp3;run;
+  /* join with fundq */
+  proc sql;
+    create table myComp4 as
+    * select a.* , b.datadate as datadate_fundq, &varsFundq;
+    select a.* , b.datadate as datadate_fundq, %do_over(values=&varsFundq, phrase=b.?, between=comma)
+    
+    from myComp3 a left join comp.fundq b
+    on a.gvkey = b.gvkey and a.fyear = b.fyearq;
+  quit;
+  /* download as &dsout */
+  proc download data=myComp4 out=&dsout;run;
+  endrsubmit;
+
+%mend;
+
+
 /* start with a dataset from funda: gvkey, fyear, roa and roe */
 
+%let wrds = wrds.wharton.upenn.edu 4016;options comamid = TCP remote=WRDS;
+signon username=_prompt_;
+rsubmit;
 data a_funda (keep = gvkey fyear sich roa roe);
 set comp.funda;
 if at > 0;
@@ -18,8 +67,12 @@ roa = ni / at;
 roe = ni / ceq;
 if indfmt='INDL' and datafmt='STD' and popsrc='D' and consol='C' ;
 run;
+proc download data=a_funda out=a_funda;run;
+endrsubmit;
+
 
 /* lets make year-indicator variables */
+
 
 /* simple way */
 data b_indicators;
@@ -36,11 +89,12 @@ set a_funda;
 %do_over(values=2010-2013, phrase=d? = (fyear eq ?););
 run;
 
-/* fancy */
+/* fancy way */
+/* figure out first and last fyear */
 proc sql; select min(fyear), max(fyear) into :minYr, :maxYr from a_funda;quit;
 
-
 %put start year: &minYr ending year: &maxYr;
+/* create dummies */
 data b_indicators;
 set a_funda;
 %do_over(values=&minYr - &maxYr, phrase=d? = (fyear eq ?););
@@ -62,18 +116,74 @@ set a_funda;
 %do_over(kangaroo, phrase=d? = (fyear eq ?););
 run;
 
+
+/* example: processing files in some folder 
+  folder example_files_to_import has files that need to be imported and merges
+
+  copied from "Obtaining A List of Files In A Directory Using SAS - ResearchGate" 
+*/
+ %let folder = "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week4\example_files_to_import";
+data yfiles (keep = filename path);
+ length fref $8 filename $80 path $300;
+ rc = filename(fref, &folder);
+ if rc = 0 then  do;
+  did = dopen(fref);
+  rc = filename(fref);
+  end;
+ else do;
+  length msg $200.;
+  msg = sysmsg();
+  put msg=;
+  did = .;
+ end;
+ if did <= 0  then  putlog 'ERR' 'OR: Unable to open directory.';
+ dnum = dnum(did);
+ do i = 1 to dnum;
+   filename = dread(did, i);
+   path = &folder || "\" || filename;
+  /* If this entry is a file, then output. */
+  fid = mopen(did, filename);
+  if fid > 0 then output;
+ end;
+ rc = dclose(did);
+ run;
+ proc print data=yfiles;
+run;
+
+/* path holds the file name paths, assign to an array */
+%ARRAY(files, DATA=yfiles, VAR=path) ;
+
+%put %do_over(files, phrase =file: ? ?_I_);
+
+%macro doImport(f);
+
+    /* import file f */
+    filename MYFILE "&f";
+    data myData; /* should add index */
+    infile MYFILE dsd delimiter='09'x /* tab delimited */ firstobs=2 LRECL=32767 missover;
+    input score gvkey fyear mymeasure  auditfee  filinglength  delay fog numberWords  mkvalt  size  roa numest institutHold;
+    run;
+
+    %if %sysfunc(exist(allInputData)) %then %do;
+      /* allInputData exists, append the newly imported data */
+      proc append base=allInputData data=myData; run;
+    %end;
+    %else %do;
+      /* it is the first dataset -> set allInputData to equal newly imported dataset */
+      data allInputData; set myData;run;
+    %end;
+%mend;
+
+/* repeat the import for each item in array files */
+%do_over(files, macro=doImport);
+
+
 /* another example: industry-adjust variables */
 
 /* simple way: industry(-year)-adjusted roa 
 	compute average roa by sich-year and subtract that from firm roa*/
 
-/*  Include array function macros */
-filename m1 url 'http://www.wrds.us/macros/array_functions.sas';
-%include m1;
-/*  Include runquit macro */
-filename m2 url 'http://www.wrds.us/macros/runquit.sas';
-%include m2;
- 
+
 /*  Helper macro to compute industry adjusted numbers */
 %macro computedIAdj(var);    &var._IA = &var - &var._median;%mend;
  
