@@ -184,11 +184,14 @@ fincf_at = fincf / at;	* finance cash flows scaled by total assets;
 gdwil_at = GDWL / at;	*goodwill scaled by total assets;
 asset_turn = sale/at;
 if fyear > 2009; * restrict sample size;
-if _N_ <= 500;	* 500 obs;
 run; 
-proc download data=myComp out=sample;run;
+proc download data=mydata out=sample;run;
 endrsubmit;
 
+data sample;
+set sample;
+if _N_ <= 500;	* 500 obs;
+run;
 
 /*  Invoke macro */ 
 
