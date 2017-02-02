@@ -11,8 +11,9 @@
 
 filename mprint 'c:\temp\sas_macrocode.txt'; options mfile mprint;
 
-/* Clay's array and do_over are also loaded */
-
+/* load Clay's array and do_over and runquit */
+filename m1 url 'http://www.wrds.us/macros/array_functions.sas'; %include m1;
+filename m2 url 'http://www.wrds.us/macros/runquit.sas'; %include m2;
 
 /* create dataset */
 

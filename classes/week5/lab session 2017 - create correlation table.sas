@@ -158,9 +158,9 @@ filename m2 url 'http://www.wrds.us/macros/runquit.sas';
 
 	/*  Clean up */    
 
-	proc datasets library=work;    
-		delete corr_p corr_s prob_pearson prob_spearman fisher_p fisher_s;    
-	%runquit;
+/*	proc datasets library=work;    */
+/*		delete corr_p corr_s prob_pearson prob_spearman fisher_p fisher_s;    */
+/*	%runquit;*/
 %mend;
 
 
