@@ -1,6 +1,6 @@
 /* import macros */
 
-%let myFolder = E:\teaching\2015_wrds\acg6935_wrds_sas\classes\week5;
+%let myFolder = E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week5;
 
 %include "&myFolder\macro_1_getfunda.sas";
 %include "&myFolder\macro_2_earn_ann_date.sas";
