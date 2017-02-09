@@ -1,6 +1,6 @@
 /* import macros */
 
-%let myFolder = E:\teaching\2015_wrds\acg6935_wrds_sas\classes\week6;
+%let myFolder = E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week6;
 %let exportDir= &myFolder\sas_exports;
 
 /* specific macros */
@@ -17,6 +17,10 @@
 %include "&myFolder\macro_common_macros.sas";
 
 filename mprint 'c:\temp\sas_macrocode.txt'; options mfile mprint;
+
+/* load Clay's array and do_over and runquit */
+filename m1 url 'http://www.wrds.us/macros/array_functions.sas'; %include m1;
+filename m2 url 'http://www.wrds.us/macros/runquit.sas'; %include m2;
 
 /* create dataset */
 
