@@ -1,0 +1,45 @@
+/*
+
+	correlation for pairs of stocks, by year
+	problem: full 7000x7000 correlation matrix will break SAS
+
+	potential approaches/solutions
+
+	do_over => compute correlation table by industry (reduce correlation matrix size)
+
+	code generation => python, perl, nodejs/javascript
+
+	other tools (large data processing)
+
+*/
+
+
+code generation using javascript
+--------------------------------
+
+commands in www.jsconsole.com
+
+/* load mustach (templating engine) */
+:load https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.js
+
+/* example */
+Mustache.render("hello {{name}}", {name: "David"});
+
+/* create pairs of symbols -- you would import this, for example list of permno, and generate combinations */
+var symList = [ { one: 123, two: 456 }, { one: 123, two: 789 },{ one: 456, two: 789 }   ];
+
+/* template */
+var template = "data dset2; set dset1; where permno in ({{one}}, {{two}});run; proc corr data=dsin outp = corr_p; var ret; run; /* need code here to append results etc */\n";
+
+/* result */
+var result = "";
+
+/* for each entry fill up template */
+symList.forEach(function(el){ result += Mustache.render(template, el); });
+
+/* output */
+console.log(result);
+
+
+
+

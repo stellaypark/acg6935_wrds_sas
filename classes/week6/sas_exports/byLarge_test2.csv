@@ -1,10 +1,10 @@
 Variable,pVal
 ret,0.000
-beta,0.388
+beta,0.200
 btm,0.000
 size,0.000
 roa,0.000
 loss,0.000
-beta_lag,0.017
+beta_lag,0.013
 btm_lag,0.000
 size_lag,0.000
