@@ -1,6 +1,6 @@
 /* X command and system command: commands issued as if on the 'command line' */
 
-%let moYear =2015_Feb;
+%let moYear =2017_Feb;
 %let topDir =C:\temp\someproject\; 
 
 /* create directory */
@@ -53,12 +53,13 @@ X CD &myDir;
 /* tell stata to run do file 
 	note: stata do file uses 'eststo' and 'esttab' which may not be installed by default
 */
-systask command "'M:\Stata12 IC\Stata.exe' -e do &myDir.\example_do_file.do" ;
+systask command "'C:\Program Files (x86)\Stata13\Stata-64.exe' -e do &myDir.\example_do_file.do" ;
+
 
 /* option -b will pop up window with location log file
 http://www.stata.com/support/faqs/mac/advanced-topics/
 */
-systask command "'M:\Stata12 IC\Stata.exe' -b do &myDir.\example_do_file.do" ;
+systask command "'C:\Program Files (x86)\Stata13\Stata-64.exe' -b do &myDir.\example_do_file.do" ;
 
 /* create latex macros for the number of obs and unique firms
 

@@ -34,5 +34,24 @@ proc sql;
 	and missing(b.ret) ne 1 ; 
 quit;
 
-/* transpose */
+/* chop up the data by quarter -- here year 2011 -- need to make sure days with no trading have a missing value */
 
+data c_msf2 (keep = permno date ret);
+set c_msf;
+if "01jan2011"d <= date <= "20jan2011"d; /* some dates */
+if permno in (10001, 10002, 10116, 10138); /* some firms */ 
+
+run;
+
+/* transpose 'by' requires sort */
+proc sort data = c_msf2; by date;run;
+
+/* transpose -> each permno in a column, #rows is #days */
+proc transpose data=c_msf2 out=d_msfwide prefix=p;
+id permno;
+    by date ;    
+    var ret;
+run;
+
+/* correlations */
+proc corr data=d_msfwide;run;

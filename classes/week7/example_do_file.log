@@ -1,0 +1,117 @@
+
+  ___  ____  ____  ____  ____ (R)
+ /__    /   ____/   /   ____/
+___/   /   /___/   /   /___/   13.1   Copyright 1985-2013 StataCorp LP
+  Statistics/Data Analysis            StataCorp
+                                      4905 Lakeway Drive
+                                      College Station, Texas 77845 USA
+                                      800-STATA-PC        http://www.stata.com
+                                      979-696-4600        stata@stata.com
+                                      979-696-4601 (fax)
+
+8-user Stata network perpetual license:
+       Serial number:  301306254234
+         Licensed to:  Christopher Ondrako
+                       IT Operations University of Florida
+
+Notes:
+      1.  Stata running in batch mode
+
+. do E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week7\\example_do_fil
+> e.do 
+
+. use "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week7\sas_export\my
+> Funda.dta", clear
+
+. 
+. eststo: logit loss sale mtb
+
+Iteration 0:   log likelihood = -18864.457
+Iteration 1:   log likelihood =   -18538.5
+Iteration 2:   log likelihood = -18254.578
+Iteration 3:   log likelihood = -18075.038
+Iteration 4:   log likelihood = -18010.557
+Iteration 5:   log likelihood = -17995.169
+Iteration 6:   log likelihood = -17990.754
+Iteration 7:   log likelihood = -17990.072
+Iteration 8:   log likelihood = -17990.048
+Iteration 9:   log likelihood = -17990.048
+
+Logistic regression                               Number of obs   =      
+> 28359
+                                                  LR chi2(2)      =    17
+> 48.82
+                                                  Prob > chi2     =     0
+> .0000
+Log likelihood = -17990.048                       Pseudo R2       =     0
+> .0464
+
+-------------------------------------------------------------------------
+> -----
+        loss |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Inte
+> rval]
+-------------+-----------------------------------------------------------
+> -----
+        sale |  -.0001363   5.44e-06   -25.04   0.000    -.0001469   -.00
+> 01256
+         mtb |   .0009181   .0002385     3.85   0.000     .0004507    .00
+> 13855
+       _cons |  -.2746342    .013584   -20.22   0.000    -.3012583   -.24
+> 80102
+-------------------------------------------------------------------------
+> -----
+Note: 90 failures and 3 successes completely determined.
+(est1 stored)
+
+. eststo: logit loss sale mtb ceq
+
+Iteration 0:   log likelihood = -18864.457
+Iteration 1:   log likelihood = -18496.797
+Iteration 2:   log likelihood = -18198.434
+Iteration 3:   log likelihood = -18005.177
+Iteration 4:   log likelihood = -17932.561
+Iteration 5:   log likelihood = -17916.514
+Iteration 6:   log likelihood = -17912.604
+Iteration 7:   log likelihood = -17912.144
+Iteration 8:   log likelihood = -17912.142
+Iteration 9:   log likelihood = -17912.142
+Iteration 10:  log likelihood = -17912.142
+Iteration 11:  log likelihood = -17912.142
+Iteration 12:  log likelihood = -17912.142
+Iteration 13:  log likelihood = -17912.142
+
+Logistic regression                               Number of obs   =      
+> 28359
+                                                  LR chi2(3)      =    19
+> 04.63
+                                                  Prob > chi2     =     0
+> .0000
+Log likelihood = -17912.142                       Pseudo R2       =     0
+> .0505
+
+-------------------------------------------------------------------------
+> -----
+        loss |      Coef.   Std. Err.      z    P>|z|     [95% Conf. Inte
+> rval]
+-------------+-----------------------------------------------------------
+> -----
+        sale |  -.0000737   6.87e-06   -10.73   0.000    -.0000872   -.00
+> 00603
+         mtb |   .0008164   .0002229     3.66   0.000     .0003794    .00
+> 12534
+         ceq |  -.0001234   .0000114   -10.79   0.000    -.0001458    -.0
+> 00101
+       _cons |  -.2484505    .013815   -17.98   0.000    -.2755274   -.22
+> 13736
+-------------------------------------------------------------------------
+> -----
+Note: 119 failures and 3 successes completely determined.
+(est2 stored)
+
+. esttab using "E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week7\stat
+> a_out.csv" , replace label 
+(output written to E:\teaching\2017_wrds\acg6935_wrds_sas\classes\week7\s
+> tata_out.csv)
+
+. 
+end of do-file
